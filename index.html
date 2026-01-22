@@ -131,7 +131,7 @@
     <div class="timer" id="timer">15:00</div>
     <div class="note">Čas běží automaticky · po vypršení se resetuje</div>
     <div class="controls">
-      <button class="btn" id="pauseBtn">Zastavit</button>
+      <button class="btn" id="pauseBtn">Spustit</button>
       <button class="btn secondary" id="resetBtn">Reset</button>
     </div>
   </div>
@@ -139,7 +139,7 @@
   <script>
     const TOTAL_TIME = 15 * 60;
     let timeLeft = TOTAL_TIME;
-    let isPaused = false;
+    let isPaused = true;
     let intervalId;
 
     const timerEl = document.getElementById("timer");
@@ -189,8 +189,8 @@
 
     resetBtn.addEventListener("click", () => {
       timeLeft = TOTAL_TIME;
-      isPaused = false;
-      pauseBtn.textContent = "Zastavit";
+      isPaused = true;
+      pauseBtn.textContent = "Spustit";
       updateTimer();
     });
 
