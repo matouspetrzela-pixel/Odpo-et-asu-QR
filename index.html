@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Debata – časovač</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .box {
+      background: #1e293b;
+      padding: 24px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    .topic {
+      font-size: 18px;
+      margin-bottom: 24px;
+      color: #93c5fd;
+      word-wrap: break-word;
+    }
+
+    .timer {
+      font-size: 64px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+      transition: color 0.3s ease;
+    }
+
+    .note {
+      font-size: 13px;
+      opacity: 0.6;
+      margin-bottom: 16px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn {
+      background: #3b82f6;
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.secondary {
+      background: #475569;
+    }
+
+    .btn.secondary:hover {
+      background: #334155;
+    }
+
+    /* POSLEDNÍ MINUTA */
+    .warning {
+      color: #facc15;
+    }
+
+    /* POSLEDNÍ VTEŘINY */
+    .danger {
+      color: #ef4444;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @media (min-width: 600px) {
+      .timer {
+        font-size: 80px;
+      }
+    }
+
+    @media (min-width: 900px) {
+      .timer {
+        font-size: 96px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h1>Diskuzní kolo</h1>
+    <div class="topic" id="topic">Téma: AI obecně</div>
+    <div class="timer" id="timer">15:00</div>
+    <div class="note">Čas běží automaticky · po vypršení se resetuje</div>
+    <div class="controls">
+      <button class="btn" id="pauseBtn">Zastavit</button>
+      <button class="btn secondary" id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    const TOTAL_TIME = 15 * 60;
+    let timeLeft = TOTAL_TIME;
+    let isPaused = false;
+    let intervalId;
+
+    const timerEl = document.getElementById("timer");
+    const topicEl = document.getElementById("topic");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const params = new URLSearchParams(window.location.search);
+    const topic = params.get("topic");
+
+    if (topic) {
+      topicEl.textContent = "Téma: " + decodeURIComponent(topic);
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+
+      timerEl.textContent =
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0");
+
+      timerEl.classList.remove("warning", "danger");
+
+      if (timeLeft <= 60 && timeLeft > 10) {
+        timerEl.classList.add("warning");
+      }
+
+      if (timeLeft <= 10) {
+        timerEl.classList.add("danger");
+      }
+
+      if (!isPaused) {
+        timeLeft--;
+
+        if (timeLeft < 0) {
+          timeLeft = TOTAL_TIME;
+        }
+      }
+    }
+
+    pauseBtn.addEventListener("click", () => {
+      isPaused = !isPaused;
+      pauseBtn.textContent = isPaused ? "Spustit" : "Zastavit";
+    });
+
+    resetBtn.addEventListener("click", () => {
+      timeLeft = TOTAL_TIME;
+      isPaused = false;
+      pauseBtn.textContent = "Zastavit";
+      updateTimer();
+    });
+
+    updateTimer();
+    intervalId = setInterval(updateTimer, 1000);
+  </script>
+
+</body>
+</html>
